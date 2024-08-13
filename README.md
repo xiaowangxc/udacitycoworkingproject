@@ -41,6 +41,7 @@ export POSTGRES_PASSWORD=$(kubectl get secret --namespace default <SERVICE_NAME>
 
 echo $POSTGRES_PASSWORD
 ```
+export POSTGRES_PASSWORD=$(kubectl get secret --namespace default coworkingdbsvs-postgresql -o jsonpath="{.data.postgres-password}" | base64 -d)
 
 <sup><sub>* The instructions are adapted from [Bitnami's PostgreSQL Helm Chart](https://artifacthub.io/packages/helm/bitnami/postgresql).</sub></sup>
 
@@ -66,6 +67,8 @@ We will need to run the seed files in `db/` in order to create the tables and po
 kubectl port-forward --namespace default svc/<SERVICE_NAME>-postgresql 5432:5432 &
     PGPASSWORD="$POSTGRES_PASSWORD" psql --host 127.0.0.1 -U postgres -d postgres -p 5432 < <FILE_NAME.sql>
 ```
+
+kubectl port-forward --namespace default svc/coworkingdbsvc-postgresql 5432:5432 & PGPASSWORD="$POSTGRES_PASSWORD" psql --host 127.0.0.1 -U postgres -d postgres -p 5432 < ./db/1_create_tables.sql
 
 ### 2. Running the Analytics Application Locally
 In the `analytics/` directory:
